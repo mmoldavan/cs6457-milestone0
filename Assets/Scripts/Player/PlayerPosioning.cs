@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerPosioning : MonoBehaviour
 {
 	public int damagePerShot = 100;
-	public float timeBetweenPosions = 15f;
+	public float timeBetweenPosions = 5f;
+	public Slider posionSlider;
 
 	float explosionTimer;
 
 	ParticleSystem posionParticles;
 	Light playerLight;
 	float effectsDisplayTime = 0.2f;
+
+	Ray posionRay;
+	RaycastHit[] collisions;
 	
 	
 	void Awake ()
@@ -23,7 +28,7 @@ public class PlayerPosioning : MonoBehaviour
 	{
 		explosionTimer += Time.deltaTime;
 		
-		if(Input.GetButton ("Fire1") && explosionTimer >= timeBetweenPosions && Time.timeScale != 0)
+		if(Input.GetButton ("Fire2") && explosionTimer >= timeBetweenPosions && Time.timeScale != 0)
 		{
 			Posion ();
 		}
@@ -32,6 +37,8 @@ public class PlayerPosioning : MonoBehaviour
 		{
 			DisableEffects ();
 		}
+
+		posionSlider.value = Mathf.Min (explosionTimer, timeBetweenPosions) / timeBetweenPosions;
 	}
 	
 	
@@ -49,5 +56,18 @@ public class PlayerPosioning : MonoBehaviour
 		
 		posionParticles.Stop ();
 		posionParticles.Play ();
+
+		posionRay.origin = transform.position;
+		posionRay.direction = transform.forward;
+		
+		collisions = Physics.SphereCastAll (posionRay, 5);
+		foreach (RaycastHit hit in collisions)
+		{
+			EnemyHealth enemyHealth = hit.collider.GetComponent <EnemyHealth> ();
+			if(enemyHealth != null)
+			{
+				enemyHealth.TakeDamage (damagePerShot, hit.point);
+			}
+		}
 	}
 }

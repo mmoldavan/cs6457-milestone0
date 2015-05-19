@@ -4,11 +4,9 @@ public class PlayerShooting : MonoBehaviour
 {
     public int damagePerShot = 20;
     public float timeBetweenBullets = 0.15f;
-	public float timeBetweenExplosions = 10f;
     public float range = 100f;
 	
     float timer;
-	float explosionTimer;
 
     Ray shootRay;
     RaycastHit shootHit;
@@ -38,10 +36,6 @@ public class PlayerShooting : MonoBehaviour
         {
             Shoot ();
         }
-
-		if (Input.GetButton ("Fire2") && explosionTimer >= timeBetweenExplosions && Time.timeScale != 0) {
-			Explode ();
-		}
 
         if(timer >= timeBetweenBullets * effectsDisplayTime)
         {
@@ -88,9 +82,4 @@ public class PlayerShooting : MonoBehaviour
             gunLine.SetPosition (1, shootRay.origin + shootRay.direction * range);
         }
     }
-
-	void Explode ()
-	{
-		explosionTimer = 0f;
-	}
 }
